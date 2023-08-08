@@ -7,33 +7,37 @@ import ceramic.Scene;
 import ceramic.Tilemap;
 import ceramic.LdtkData.LdtkEntityInstance;
 import components.LdtkSpriteComponent;
-import entities.Player;
+import entities.Character;
 
 using ceramic.TilemapPlugin;
 
-var ldtkDir = "ldtk-project";
-var ldtkName = "ldtk-project/ldtk.ldtk";
+class LdtkScene extends Scene {
 
-class MainScene extends Scene {
-    // var ldtkName = Tilemaps.LDTK_PROJECT__LDTK;
+    public var level:ceramic.LdtkData.LdtkLevel;
+
+    var ldtkPath:String;
+    var ldtkDir:String;
+
+    public function new(ldtkPath:String):Void {
+        super();
+        this.ldtkPath = ldtkPath;
+        ldtkDir = ldtkPath.substr(0, ldtkPath.lastIndexOf("/"));
+    }
 
     override function preload() {
-        assets.addTilemap(ldtkName);
+        assets.addTilemap(ldtkPath);
     }
 
     override function create() {
-        var tilemap:Tilemap = null;
-
-        var ldtkData = assets.ldtk(ldtkName);
-        var level = ldtkData.worlds[0].levels[0];
+        var ldtkData = assets.ldtk(ldtkPath);
+        level = ldtkData.worlds[0].levels[0];
 
         level.ensureLoaded(() -> {
-
             // ensureLoaded() wrapping is only needed when using external levels,
             // but can still be used on any LDtk project too
 
             // Create and display tilemap
-            tilemap = new Tilemap();
+            var tilemap = new Tilemap();
             tilemap.depth = 1;
             tilemap.tilemapData = level.ceramicTilemap;
             add(tilemap);
@@ -41,7 +45,7 @@ class MainScene extends Scene {
             // Also create visuals for applicable entities
             level.createVisualsForEntities(tilemap, null, function (entity:LdtkEntityInstance): Visual {
                 if (entity.def.identifier == "Player") {
-                    var p = new Player();
+                    var p = new Character();
                     p.component("ldtkSprite", new LdtkSpriteComponent(assets, ldtkDir, entity));
                     p.component("playerControl", new PlayerControlComponent());
                     return p;
@@ -60,5 +64,4 @@ class MainScene extends Scene {
         });
 
     }
-
 }

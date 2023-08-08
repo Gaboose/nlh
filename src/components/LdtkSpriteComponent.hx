@@ -39,9 +39,9 @@ class LdtkSpriteComponent extends Entity implements Component {
         }
 
         try {
-            // fieldInstance.def is not populated, probably because
+            // fieldInstance.def is not populated, me thinks because
             // of a bug in ceramic. So we guess which field is which
-            // for now. Close your eyes and cross your fingers. 🤞
+            // for now. Close your eyes and cross your fingers 🤞.
             for (fieldInstance in ldtkEntity.fieldInstances) {
                 // Find the sprite field.
                 if (fieldInstance.value is String && fieldSprite == null) {
@@ -78,6 +78,15 @@ class LdtkSpriteComponent extends Entity implements Component {
         } else {
             texture = ldtkEntity.def.tileset.ceramicTileset.texture;
         }
+    }
+
+    function bindAsComponent() {
+        sprite.x = ldtkEntity.pxX;
+        sprite.y = ldtkEntity.pxY;
+
+        sprite.quad.roundTranslation = 1;
+
+        trySetupSpriteSheet();
     }
 
     // Resolves the race between asset loader and the
@@ -126,14 +135,5 @@ class LdtkSpriteComponent extends Entity implements Component {
         sprite.sheet = sheet;
         sprite.animation = ANIMATION_IDLE;
         sprite.anchor(ldtkEntity.def.pivotX, ldtkEntity.def.pivotY);
-    }
-
-    function bindAsComponent() {
-        sprite.x = ldtkEntity.pxX;
-        sprite.y = ldtkEntity.pxY;
-
-        sprite.quad.roundTranslation = 1;
-
-        trySetupSpriteSheet();
     }
 }

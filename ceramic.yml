@@ -1,9 +1,9 @@
 app:
-    package: ceramic-samples.ldtk-level
-    name: ldtk-level
-    displayName: LDtk Level
-    author: Jeremy Faivre
-    version: '1.0'
+    package: gaboose.nlh
+    name: nlh
+    displayName: NLH
+    author: Gabrielius Mickevicius
+    version: '0.1'
 
     plugins:
         - tilemap
