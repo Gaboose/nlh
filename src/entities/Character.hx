@@ -29,6 +29,8 @@ class Character extends Sprite {
 
         x += dx;
         y += dy;
+
+        emitMoved();
     }
 
     override function update(delta:Float) {
@@ -50,4 +52,6 @@ class Character extends Sprite {
 
         return super.set_animation(ANIMATION_IDLE);
     }
+
+    @event function moved();
 }

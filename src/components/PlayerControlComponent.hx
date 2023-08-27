@@ -77,8 +77,8 @@ class PlayerControlComponent extends Entity implements Component {
 
         // Find the distance vector to the screen center.
         var c = CameraSystem.shared.cameraComponent;
-        var dx = c.centerX() - character.x;
-        var dy = c.centerY() - character.y;
+        var dx = c.targetX() - character.x;
+        var dy = c.targetY() - character.y;
 
         // Remove jitter when distance is close to zero in either axis.
         if (Math.abs(dx) < 1) { dx = 0; }

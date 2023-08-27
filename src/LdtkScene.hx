@@ -1,5 +1,6 @@
 package;
 
+import systems.CameraSystem;
 import ceramic.Sprite;
 import components.PlayerControlComponent;
 import ceramic.Visual;
@@ -48,6 +49,10 @@ class LdtkScene extends Scene {
                     var p = new Character();
                     p.component("ldtkSprite", new LdtkSpriteComponent(assets, ldtkDir, entity));
                     p.component("playerControl", new PlayerControlComponent());
+
+                    // Move camera to the player.
+                    CameraSystem.shared.cameraComponent.setPlayer(p);
+
                     return p;
                 }
 
