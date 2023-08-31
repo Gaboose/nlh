@@ -30,13 +30,7 @@ class LdtkSpriteComponent extends Entity implements Component {
         super();
 
         this.assets = assets;
-
         this.ldtkEntity = ldtkEntity;
-        
-        // Parse ldtk fields into private variables.
-        for (fieldInstance in ldtkEntity.fieldInstances) {
-            trace("FIELD INSTANCE DEF", fieldInstance, fieldInstance.def);
-        }
 
         try {
             // fieldInstance.def is not populated, me thinks because
@@ -94,17 +88,13 @@ class LdtkSpriteComponent extends Entity implements Component {
     function trySetupSpriteSheet() {
         if (texture == null) {
             // Texture is not loaded yet.
-            trace("DEBUG1");
             return;
         }
 
         if (sprite == null) {
             // Sprite is not bound yet.
-            trace("DEBUG2");
             return;
         }
-
-        trace("DEBUG3");
 
         setupSpriteSheet();
     }
@@ -114,11 +104,8 @@ class LdtkSpriteComponent extends Entity implements Component {
         sheet.texture = texture;
         
         sheet.grid(ldtkEntity.def.width, ldtkEntity.def.height);
-        trace("DEBUZZ", ldtkEntity.def.identifier, ldtkEntity.def.width, ldtkEntity.def.height, texture.width, texture.height);
 
         var cellsByRow = Math.round(sheet.texture.width / sheet.gridWidth);
-
-        trace("DEBUZZ", ldtkEntity.def.identifier, [for (j in 0...cellsByRow) j]);
 
         if (fieldSpriteStates != null && fieldSpriteStates.length > 0) {
             // Set animations from fieldSpriteStates;

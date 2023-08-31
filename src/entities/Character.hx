@@ -1,6 +1,7 @@
 package entities;
 
 import ceramic.Sprite;
+import components.CollidableComponent;
 
 var ANIMATION_IDLE = 'idle';
 var ANIMATION_WALK = 'walk';
@@ -27,8 +28,8 @@ class Character extends Sprite {
             scaleX = -1;
         }
 
-        x += dx;
-        y += dy;
+        var collidable:CollidableComponent = this.component("collidable");
+        collidable.control(dx, dy);
 
         emitMoved();
     }

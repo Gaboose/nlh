@@ -1,5 +1,6 @@
 package;
 
+import systems.CollisionSystem;
 import systems.CameraSystem;
 import ceramic.Sprite;
 import components.PlayerControlComponent;
@@ -8,6 +9,7 @@ import ceramic.Scene;
 import ceramic.Tilemap;
 import ceramic.LdtkData.LdtkEntityInstance;
 import components.LdtkSpriteComponent;
+import components.CollidableComponent;
 import entities.Character;
 
 using ceramic.TilemapPlugin;
@@ -49,6 +51,7 @@ class LdtkScene extends Scene {
                     var p = new Character();
                     p.component("ldtkSprite", new LdtkSpriteComponent(assets, ldtkDir, entity));
                     p.component("playerControl", new PlayerControlComponent());
+                    p.component("collidable", new CollidableComponent(10, 4));
 
                     // Move camera to the player.
                     CameraSystem.shared.cameraComponent.setPlayer(p);
@@ -66,7 +69,16 @@ class LdtkScene extends Scene {
             });
 
             assets.load();
-        });
 
+            var collision = level.layerInstance("Collision");
+
+            CollisionSystem.shared = new CollisionSystem(
+                collision.cWid,
+                collision.cHei,
+                collision.def.gridSize
+            );
+
+            CollisionSystem.shared.setIntGrid(collision.intGrid);
+        });
     }
 }

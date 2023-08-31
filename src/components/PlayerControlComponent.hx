@@ -87,6 +87,8 @@ class PlayerControlComponent extends Entity implements Component {
         // Stop, if we're already here.
         var distance = Math.sqrt(dx*dx + dy*dy);
         if (distance == 0) {
+            // Trigger the idle animation;
+            @:privateAccess character.control(0, 0);
             return;
         }
 
