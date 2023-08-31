@@ -14,8 +14,8 @@ class Project extends Entity {
 
         settings.antialiasing = 2;
         settings.background = Color.BLACK;
-        settings.targetWidth = Std.int(576 / 6 * 5);
-        settings.targetHeight = Std.int(320 / 6 * 5);
+        settings.targetWidth = Std.int(576 / 2);
+        settings.targetHeight = Std.int(320 / 2);
         settings.resizable = true;
         settings.fullscreen = false;
 
