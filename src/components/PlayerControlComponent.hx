@@ -5,6 +5,7 @@ import ceramic.Component;
 import ceramic.InputMap;
 import entities.Character;
 import systems.CameraSystem;
+import systems.TouchSystem;
 import ceramic.StateMachine;
 
 /**
@@ -15,6 +16,7 @@ import ceramic.StateMachine;
     var LEFT;
     var DOWN;
     var UP;
+    var ACTION;
 }
 
 enum abstract PlayerControlState(Int) {
@@ -31,6 +33,8 @@ class PlayerControlComponent extends Entity implements Component {
 
     var velocity = 80.0;
 
+    var _clicked = false;
+
     public function new() {
         super();
 
@@ -44,12 +48,14 @@ class PlayerControlComponent extends Entity implements Component {
         inputMap.bindKeyCode(LEFT, LEFT);
         inputMap.bindKeyCode(DOWN, DOWN);
         inputMap.bindKeyCode(UP, UP);
+        inputMap.bindScanCode(ACTION, SPACE);
         // We use scan code for these so that it
         // will work with non-qwerty layouts as well
         inputMap.bindScanCode(RIGHT, KEY_D);
         inputMap.bindScanCode(LEFT, KEY_A);
         inputMap.bindScanCode(DOWN, KEY_S);
         inputMap.bindScanCode(UP, KEY_W);
+        inputMap.bindScanCode(ACTION, KEY_E);
 
         // Bind gamepad
         //
@@ -61,6 +67,8 @@ class PlayerControlComponent extends Entity implements Component {
         inputMap.bindGamepadButton(LEFT, DPAD_LEFT);
         inputMap.bindGamepadButton(DOWN, DPAD_DOWN);
         inputMap.bindGamepadButton(UP, DPAD_UP);
+
+        TouchSystem.shared.onClick(this, function() {_clicked = true;});
     }
 
     function CAMERA_update(delta:Float):Void {
@@ -88,13 +96,13 @@ class PlayerControlComponent extends Entity implements Component {
         var distance = Math.sqrt(dx*dx + dy*dy);
         if (distance == 0) {
             // Trigger the idle animation;
-            @:privateAccess character.control(0, 0);
+            control(0, 0);
             return;
         }
 
         // Move character.
         var f = delta * velocity / distance;
-        @:privateAccess character.control(dx*f, dy*f);
+        control(dx*f, dy*f);
     }
 
     function KEYBOARD_update(delta:Float):Void {
@@ -107,7 +115,12 @@ class PlayerControlComponent extends Entity implements Component {
         if (inputMap.pressed(DOWN)) { dy += 1; }
 
         var f = delta * velocity;
-        @:privateAccess character.control(dx*f, dy*f);
+        control(dx*f, dy*f);
+    }
+
+    function control(dx:Float, dy:Float):Void {
+        @:privateAccess character.control(dx, dy, inputMap.justPressed(ACTION) || _clicked);
+        _clicked = false;
     }
 
     function bindAsComponent() {

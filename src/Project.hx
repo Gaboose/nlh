@@ -1,5 +1,6 @@
 package;
 
+import systems.TouchSystem;
 import systems.CameraSystem;
 import components.CameraComponent;
 import ceramic.Color;
@@ -35,6 +36,9 @@ class Project extends Entity {
         var c = new CameraComponent();
         app.scenes.main.component("camera", c);
         CameraSystem.shared = new CameraSystem(c);
+
+        // Set up TouchSystem
+        TouchSystem.shared = new TouchSystem();
     }
 
 }

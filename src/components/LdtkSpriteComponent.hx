@@ -22,9 +22,11 @@ class LdtkSpriteComponent extends Entity implements Component {
 
     var fieldSprite:String;
 
-    var fieldSpriteStates:Array<{name:String, numCells:Int}>;
+    var fieldSpriteStates:Array<{name:String, numCells:Int, frameDuration:Float}>;
 
     var texture:Texture;
+
+    var defaultFrameDuration = 0.2;
 
     public function new(assets:Assets, ldtkDir:String, ldtkEntity:LdtkEntityInstance) {
         super();
@@ -48,7 +50,17 @@ class LdtkSpriteComponent extends Entity implements Component {
                     fieldSpriteStates = [];
                     for (row in arr) {
                         var parts = cast(row, String).split(" ");
-                        fieldSpriteStates.push({name: parts[0], numCells: Std.parseInt(parts[1])});
+                        var ss = {
+                            name: parts[0],
+                            numCells: Std.parseInt(parts[1]),
+                            frameDuration: defaultFrameDuration
+                        };
+                        trace(parts, parts.length);
+                        if (parts.length >= 3) {
+                            ss.frameDuration = Std.parseFloat(parts[2]);
+                        }
+
+                        fieldSpriteStates.push(ss);
                     }
                 }
             }
@@ -111,12 +123,13 @@ class LdtkSpriteComponent extends Entity implements Component {
             // Set animations from fieldSpriteStates;
             for (i in 0...fieldSpriteStates.length) {
                 var state = fieldSpriteStates[i];
+                trace("setting up", state);
                 var cells = [for (j in 0...state.numCells) i*cellsByRow + j];
-                sheet.addGridAnimation(state.name, cells, 0.2);
+                sheet.addGridAnimation(state.name, cells, state.frameDuration);
             }
         } else {
             // Default, if animations is not set
-            sheet.addGridAnimation(ANIMATION_IDLE, [for (j in 0...cellsByRow) j], 0.2);
+            sheet.addGridAnimation(ANIMATION_IDLE, [for (j in 0...cellsByRow) j], defaultFrameDuration);
         }
 
         sprite.sheet = sheet;

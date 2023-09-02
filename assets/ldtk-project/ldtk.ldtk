@@ -2710,7 +2710,7 @@
 									"id": "V_String",
 									"params": ["wizard-animations.png"]
 								}] },
-								{ "__identifier": "sprite_states", "__type": "Array<String>", "__value": [ "idle 2", "walk 2", "spell 5" ], "__tile": null, "defUid": 289, "realEditorValues": [ {
+								{ "__identifier": "sprite_states", "__type": "Array<String>", "__value": [ "idle 2", "walk 2", "action 4 0.1" ], "__tile": null, "defUid": 289, "realEditorValues": [ {
 									"id": "V_String",
 									"params": ["idle 2"]
 								}, {
@@ -2718,7 +2718,7 @@
 									"params": ["walk 2"]
 								}, {
 									"id": "V_String",
-									"params": ["spell 5"]
+									"params": ["action 4 0.1"]
 								} ] }
 							]
 						}
