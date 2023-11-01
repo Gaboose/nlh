@@ -1,22 +1,23 @@
 package entities;
 
-import haxe.Timer;
 import ceramic.Sprite;
 import components.CollidableComponent;
-import ceramic.StateMachine;
+import ceramic.Entity;
 
 var ANIMATION_IDLE = 'idle';
 var ANIMATION_WALK = 'walk';
-var ANIMATION_ACTION = 'action';
 var ANIMATION_DEFAULT = ANIMATION_IDLE;
 
-enum abstract CharacterState(Int) {
-    var MOVE;
-    var ACTION;
+enum CharacterState {
+    MOVE;
+    ACTION;
 }
 
 class Character extends Sprite {
-    @component var machine = new StateMachine<CharacterState>();
+    public var machineState = CharacterState.MOVE;
+
+    @event function action();
+    @event function moved();
 
     public function new() {
         super();
@@ -25,15 +26,13 @@ class Character extends Sprite {
     // Called from PlayerControlComponent.
     function control(dx:Float, dy:Float, action:Bool):Void {
         // Don't move when doing an action.
-        if (machine.state == ACTION) {
+        if (machineState == CharacterState.ACTION) {
             return;
         }
 
         // Check whether to trigger action.
         if (action) {
-            machine.state = ACTION;
-            animation = ANIMATION_ACTION;
-            Timer.delay(end_action, Std.int(currentAnimation.duration*1000));
+            emitAction();
             return;
         }
 
@@ -59,19 +58,6 @@ class Character extends Sprite {
         emitMoved();
     }
 
-    function end_action() {
-        machine.state = MOVE;
-        animation = ANIMATION_IDLE;
-    }
-
-    function MOVE_update(delta:Float) {
-
-    }
-
-    function ACTION_update(delta:Float) {
-
-    }
-
     // If animation is not found, set default animation.
     override function set_animation(s:String):String {
         if (s == ANIMATION_DEFAULT) {
@@ -86,6 +72,4 @@ class Character extends Sprite {
 
         return super.set_animation(ANIMATION_IDLE);
     }
-
-    @event function moved();
 }

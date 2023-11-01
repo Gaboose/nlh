@@ -1,5 +1,6 @@
 package;
 
+import ceramic.Filter;
 import systems.TouchSystem;
 import systems.CameraSystem;
 import components.CameraComponent;
@@ -7,6 +8,7 @@ import ceramic.Color;
 import ceramic.Entity;
 import ceramic.InitSettings;
 import ceramic.PixelArt;
+import ceramic.Assets;
 
 class Project extends Entity {
 
@@ -20,7 +22,12 @@ class Project extends Entity {
         settings.resizable = true;
         settings.fullscreen = false;
 
+        app.onceDefaultAssetsLoad(this, loadAssets);
         app.onceReady(this, ready);
+    }
+
+    function loadAssets(assets:Assets) {
+        assets.addShader(Shaders.GAUSSIAN_BLUR);
     }
 
     function ready() {

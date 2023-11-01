@@ -11,7 +11,7 @@ import ceramic.Texture;
 
 import haxe.Exception;
 
-// Reads ldtk entity fields "sprite" and "sprite_states",
+// Reads ldtk entity fields "sprite" and "animations",
 // loads the specified sprite sheet and sets up animation states.
 class LdtkSpriteComponent extends Entity implements Component {
     @entity var sprite:Sprite;
@@ -22,7 +22,7 @@ class LdtkSpriteComponent extends Entity implements Component {
 
     var fieldSprite:String;
 
-    var fieldSpriteStates:Array<{name:String, numCells:Int, frameDuration:Float}>;
+    var fieldAnimations:Array<{name:String, numCells:Int, frameDuration:Float}>;
 
     var texture:Texture;
 
@@ -44,10 +44,10 @@ class LdtkSpriteComponent extends Entity implements Component {
                     fieldSprite = ldtkDir + "/" + fieldInstance.value;
                 }
     
-                // Find the sprite_states field.
-                if (fieldInstance.value is Array && fieldSpriteStates == null) {
+                // Find the animations field.
+                if (fieldInstance.value is Array && fieldAnimations == null) {
                     var arr:Array<String> = cast fieldInstance.value;
-                    fieldSpriteStates = [];
+                    fieldAnimations = [];
                     for (row in arr) {
                         var parts = cast(row, String).split(" ");
                         var ss = {
@@ -55,12 +55,11 @@ class LdtkSpriteComponent extends Entity implements Component {
                             numCells: Std.parseInt(parts[1]),
                             frameDuration: defaultFrameDuration
                         };
-                        trace(parts, parts.length);
                         if (parts.length >= 3) {
                             ss.frameDuration = Std.parseFloat(parts[2]);
                         }
 
-                        fieldSpriteStates.push(ss);
+                        fieldAnimations.push(ss);
                     }
                 }
             }
@@ -118,22 +117,24 @@ class LdtkSpriteComponent extends Entity implements Component {
         sheet.grid(ldtkEntity.def.width, ldtkEntity.def.height);
 
         var cellsByRow = Math.round(sheet.texture.width / sheet.gridWidth);
+        var firstAnimationName = ANIMATION_IDLE;
 
-        if (fieldSpriteStates != null && fieldSpriteStates.length > 0) {
-            // Set animations from fieldSpriteStates;
-            for (i in 0...fieldSpriteStates.length) {
-                var state = fieldSpriteStates[i];
-                trace("setting up", state);
+        if (fieldAnimations != null && fieldAnimations.length > 0) {
+            firstAnimationName = fieldAnimations[0].name;
+
+            // Set animations from fieldAnimations;
+            for (i in 0...fieldAnimations.length) {
+                var state = fieldAnimations[i];
                 var cells = [for (j in 0...state.numCells) i*cellsByRow + j];
                 sheet.addGridAnimation(state.name, cells, state.frameDuration);
             }
         } else {
             // Default, if animations is not set
-            sheet.addGridAnimation(ANIMATION_IDLE, [for (j in 0...cellsByRow) j], defaultFrameDuration);
+            sheet.addGridAnimation(firstAnimationName, [for (j in 0...cellsByRow) j], defaultFrameDuration);
         }
 
         sprite.sheet = sheet;
-        sprite.animation = ANIMATION_IDLE;
+        sprite.animation = firstAnimationName;
         sprite.anchor(ldtkEntity.def.pivotX, ldtkEntity.def.pivotY);
     }
 }
