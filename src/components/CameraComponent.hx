@@ -1,10 +1,16 @@
 package components;
 
+import ceramic.TouchInfo;
+import camera.Drag;
+import ceramic.Visual;
+import ceramic.Point;
 import haxe.Timer;
 import entities.Character;
 import ceramic.Entity;
 import ceramic.Component;
 import ceramic.StateMachine;
+import camera.Zoom;
+import camera.PixelArtScaler;
 
 enum abstract CameraComponentState(Int) {
     var FOLLOW;
@@ -25,38 +31,56 @@ class CameraComponent extends Entity implements Component {
 
     var player:Character;
 
-    var _targetX:Float;
-    var _targetY:Float;
+    var _target:Visual = new Visual();
+
+    var _touches:camera.TouchesPointer = new camera.TouchesPointer();
+    var _drag:Drag;
+    var _zoom:Zoom;
+
+    @event function dragged();
 
     public function new() {
         super();
+        _drag = new Drag(_touches);
+        _zoom = new Zoom(_touches, 1.0, 10.0);
     }
 
     function bindAsComponent() {
-        screen.onPointerDown(this, function(info:ceramic.TouchInfo):Void {
-            // Don't drag if it's not a left-mouse button or a touch.
-            if (info.buttonId > 0) {
+        var pixelArtScaler: PixelArtScaler = scene.component("pixelArtScaler");
+        pixelArtScaler.scale(_zoom.scale);
+
+        _drag.onDrag(this, function(justChanged:Bool) {
+            if (justChanged) {
                 return;
             }
 
-            screen.onPointerMove(this, drag);
+            var p = Utils.visualPointerDelta(scene, _touches.lastPointerX, _touches.lastPointerY);
+
+            scene.x += p.x;
+            scene.y += p.y;
+            setTargetToScreenCenter();
+
+            machine.state = DRAG;
+            lastDraggedAt = Timer.stamp();
+            emitDragged();
         });
 
-        screen.onPointerUp(this, function(info:ceramic.TouchInfo):Void {
-            screen.offPointerMove(drag);
+        _zoom.onScaleChange(this, function(lastScale:Float, scale: Float, anchorScreen: Point) {
+            var pixelArtScaler: PixelArtScaler = scene.component("pixelArtScaler");
+            pixelArtScaler.scale(scale);
+
+            var invScaleDiff = 1.0/scale - 1.0/lastScale;
+            scene.x += anchorScreen.x * invScaleDiff;
+            scene.y += anchorScreen.y * invScaleDiff;
+
+            setTargetToScreenCenter();
+
+            machine.state = DRAG;
+            lastDraggedAt = Timer.stamp();
+            emitDragged();
         });
-    }
 
-    function drag(info:ceramic.TouchInfo):Void {
-        _targetX -= screen.pointerDeltaX;
-        _targetY -= screen.pointerDeltaY;
-
-        // Restrict the camera to level size;
-        setLimitedScenePos(-_targetX + screen.width/2, -_targetY + screen.height/2);
-
-        machine.state = DRAG;
-        lastDraggedAt = Timer.stamp();
-        emitDragged();
+        scene.add(_target);
     }
 
     function DRAG_update(delta:Float):Void {
@@ -72,7 +96,10 @@ class CameraComponent extends Entity implements Component {
 
         this.player = player;
 
-        setTarget(player.x, player.y);
+        _target.x = player.x;
+        _target.y = player.y;
+        setSceneToTarget();
+
         player.onMoved(this, tryFollowPlayer);
     }
 
@@ -82,32 +109,41 @@ class CameraComponent extends Entity implements Component {
             return;
         }
 
-        setTarget(player.x, player.y);
-    }
-
-    function setTarget(targetX: Float, targetY: Float):Void {
-        _targetX = targetX;
-        _targetY = targetY;
-
-        var newSceneX = -targetX + screen.width/2;
-        var newSceneY = -targetY + screen.height/2;
-
-        setLimitedScenePos(newSceneX, newSceneY);
+        _target.x = player.x;
+        _target.y = player.y;
+        // setSceneToTarget();
     }
 
     public function targetX():Float {
-        return _targetX;
+        return _target.x;
     }
 
     public function targetY():Float {
-        return _targetY;
+        return _target.y;
     }
 
-    public function setLimitedScenePos(x:Float, y:Float):Void {
-        x = Math.min(Math.max(x, screen.width-scene.level.pxWid), 0);
-        y = Math.min(Math.max(y, screen.height-scene.level.pxHei), 0);
-        scene.pos(x, y);
+    // public function setLimitedScenePos(x:Float, y:Float):Void {
+    //     // x = Math.min(Math.max(x, screen.width-scene.level.pxWid), 0);
+    //     // y = Math.min(Math.max(y, screen.height-scene.level.pxHei), 0);
+    //     scene.pos(x, y);
+    // }
+
+    public function setTargetToScreenCenter():Void {
+        var p = new Point();
+        scene.screenToVisual(screen.nativeWidth/2, screen.nativeHeight/2, p);
+
+        _target.x = p.x;
+        _target.y = p.y;
+
+        // _targetX = -scene.x + p.x;
+        // _targetY = -scene.y + p.y;
     }
 
-    @event function dragged();
+    public function setSceneToTarget():Void {
+        var center = new Point();
+        scene.screenToVisual(screen.actualWidth/2, screen.actualHeight/2, center);
+
+        scene.x = center.x - _target.x;
+        scene.y = center.y - _target.y;
+    }
 }

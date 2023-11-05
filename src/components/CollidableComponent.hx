@@ -19,7 +19,7 @@ class CollidableComponent extends Entity implements Component {
     }
 
     function bindAsComponent() {
-        
+
     }
 
     public function control(dx:Float, dy:Float) {

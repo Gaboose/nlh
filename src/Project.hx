@@ -9,18 +9,25 @@ import ceramic.Entity;
 import ceramic.InitSettings;
 import ceramic.PixelArt;
 import ceramic.Assets;
+import camera.PixelArtScaler;
 
 class Project extends Entity {
 
     function new(settings:InitSettings) {
         super();
 
-        settings.antialiasing = 2;
+        settings.antialiasing = 0;
         settings.background = Color.BLACK;
-        settings.targetWidth = Std.int(576 / 2);
-        settings.targetHeight = Std.int(320 / 2);
+        // settings.targetWidth = 640;
+        // settings.targetHeight = 480;
+        // settings.windowWidth = 800;
+        // settings.windowHeight = 600;
+        // settings.scaling = FIT;
+        // settings.scaling = FIT_RESIZE;
         settings.resizable = true;
-        settings.fullscreen = false;
+        // settings.fullscreen = false;
+
+        settings.targetFps = 60;
 
         app.onceDefaultAssetsLoad(this, loadAssets);
         app.onceReady(this, ready);
@@ -31,13 +38,10 @@ class Project extends Entity {
     }
 
     function ready() {
-        // Render as low resolution / pixel art
-        var pixelArt = new PixelArt();
-        pixelArt.bindToScreenSize();
-        app.scenes.filter = pixelArt;
-
         // Set LdtkScene as the current scene.
         app.scenes.main = new LdtkScene("ldtk-project/ldtk.ldtk");
+        app.scenes.main.component("pixelArtScaler", new PixelArtScaler());
+        // app.scenes.main.bindToScreenSize();
 
         // Set up camera.
         var c = new CameraComponent();
@@ -47,5 +51,4 @@ class Project extends Entity {
         // Set up TouchSystem
         TouchSystem.shared = new TouchSystem();
     }
-
 }

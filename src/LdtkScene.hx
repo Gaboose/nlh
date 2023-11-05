@@ -17,6 +17,7 @@ import components.AbilitiesComponent;
 import entities.Character;
 import ceramic.Entity;
 import systems.EntityRegistrySystem;
+import camera.PixelArtScaler;
 
 using ceramic.TilemapPlugin;
 
@@ -153,8 +154,6 @@ class LdtkScene extends Scene {
             );
 
             CollisionSystem.shared.setIntGrid(collision.intGrid);
-
-            trace("scene pos", this.x, this.y);
         });
     }
 }
