@@ -5,8 +5,8 @@ import systems.EntityRegistrySystem;
 import ceramic.LdtkData.LdtkEntityInstance;
 import ceramic.Entity;
 
-class ShowTriggerable extends Entity implements Triggerable {
-    public static var identifier(default, never) = "Show";
+class HideTriggerable extends Entity implements Triggerable {
+    public static var identifier(default, never) = "Hide";
 
     var targets:Array<LdtkEntityInstance>;
     var animation:String;
@@ -20,8 +20,6 @@ class ShowTriggerable extends Entity implements Triggerable {
             switch fieldInstance.def.identifier {
                 case "targets":
                     targets = fieldInstance.value;
-                case "animation":
-                    animation = fieldInstance.value;
             }
         }
     }
@@ -35,9 +33,7 @@ class ShowTriggerable extends Entity implements Triggerable {
 
             try {
                 var sprite = cast(entity, Sprite<Dynamic>);
-                if (this.animation != null && this.animation != "")
-                    sprite.animation = this.animation;
-                sprite.visible = true;
+                sprite.visible = false;
             } catch(e) {
                 continue;
             }

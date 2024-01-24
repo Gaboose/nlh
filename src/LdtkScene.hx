@@ -7,6 +7,7 @@ import systems.CollisionSystem;
 import systems.CameraSystem;
 import ceramic.Sprite;
 import components.PlayerControlComponent;
+import components.AnimatedComponent;
 import ceramic.Visual;
 import ceramic.Scene;
 import ceramic.Tilemap;
@@ -84,6 +85,14 @@ class LdtkScene extends Scene {
                     CameraSystem.shared.cameraComponent.setPlayer(p);
 
                     return p;
+                }
+
+                if (entity.def.identifier == "Animated") {
+                    trace("animated entity found");
+                    var s = new Sprite();
+                    s.component("animated", new AnimatedComponent(entity));
+                    EntityRegistrySystem.shared.emitSet(entity.iid, s);
+                    return s;
                 }
 
                 if (entity.def.tags.contains("sprite")) {
