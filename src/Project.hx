@@ -1,5 +1,6 @@
 package;
 
+import ceramic.Text;
 import ceramic.Filter;
 import systems.TouchSystem;
 import systems.CameraSystem;
@@ -35,13 +36,16 @@ class Project extends Entity {
 
     function loadAssets(assets:Assets) {
         assets.addShader(Shaders.GAUSSIAN_BLUR);
+        assets.addFont(Fonts.PIXELIFY_SANS);
     }
 
     function ready() {
         // Set LdtkScene as the current scene.
-        app.scenes.main = new LdtkScene("ldtk-project/ldtk.ldtk");
-        app.scenes.main.component("pixelArtScaler", new PixelArtScaler());
-        // app.scenes.main.bindToScreenSize();
+        app.scenes.main = new LdtkScene("ldtk-project/ldtk.ldtk", app.assets);
+
+        var pixelArtScaler = new PixelArtScaler();
+        pixelArtScaler.filter.bindToScreenSize();
+        app.scenes.main.component("pixelArtScaler", pixelArtScaler);
 
         // Set up camera.
         var c = new CameraComponent();

@@ -1,5 +1,6 @@
 package;
 
+import ceramic.Assets;
 import ceramic.Filter;
 import triggerables.Triggerable.newTriggerable;
 import triggers.Trigger.newTrigger;
@@ -29,13 +30,14 @@ class LdtkScene extends Scene {
     var ldtkPath:String;
     var ldtkDir:String;
 
-    public function new(ldtkPath:String):Void {
+    public function new(ldtkPath:String, assets:Assets):Void {
         super();
         this.ldtkPath = ldtkPath;
         ldtkDir = ldtkPath.substr(0, ldtkPath.lastIndexOf("/"));
     }
 
     override function preload() {
+        assets.parent = app.assets;
         assets.addTilemap(ldtkPath);
     }
 
@@ -66,7 +68,13 @@ class LdtkScene extends Scene {
                 // }
 
                 if (entity.def.tags.contains("triggerable")) {
-                    newTriggerable(entity);
+                    var triggerable = newTriggerable(entity);
+                    if (triggerable == null) {
+                        // Triggerables present in ldtk, but not implemented in the game engine.
+                        trace("Unimplemented triggerable", entity);
+                        return null;
+                    }
+                    return triggerable.visual;
                 }
 
                 if (entity.def.tags.contains("trigger")) {
@@ -91,6 +99,8 @@ class LdtkScene extends Scene {
                     trace("animated entity found");
                     var s = new Sprite();
                     s.component("animated", new AnimatedComponent(entity));
+                    s.x = entity.pxX;
+                    s.y = entity.pxY;
                     EntityRegistrySystem.shared.emitSet(entity.iid, s);
                     return s;
                 }

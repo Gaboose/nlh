@@ -1,5 +1,7 @@
 package triggerables;
 
+import ceramic.Entity;
+import ceramic.Visual;
 import ceramic.LdtkData.LdtkEntityInstance;
 
 function newTriggerable(entity:LdtkEntityInstance): Triggerable {
@@ -13,6 +15,7 @@ function newTriggerable(entity:LdtkEntityInstance): Triggerable {
     return null;
 }
 
-interface Triggerable {
-    function trigger():Void;
+abstract class Triggerable extends Entity {
+    public var visual:Visual;
+    abstract public function trigger():Void;
 }

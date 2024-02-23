@@ -1,11 +1,12 @@
 package triggerables;
 
+import ceramic.Visual;
 import ceramic.Sprite;
 import systems.EntityRegistrySystem;
 import ceramic.LdtkData.LdtkEntityInstance;
 import ceramic.Entity;
 
-class ShowTriggerable extends Entity implements Triggerable {
+class ShowTriggerable extends Triggerable {
     public static var identifier(default, never) = "Show";
 
     var targets:Array<LdtkEntityInstance>;

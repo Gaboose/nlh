@@ -6,7 +6,7 @@ import ceramic.LdtkData.LdtkEntityInstance;
 import ceramic.Entity;
 import components.FlickerComponent;
 
-class FlickerTriggerable extends Entity implements Triggerable {
+class FlickerTriggerable extends Triggerable {
     public static var identifier(default, never) = "Flicker";
 
     var targets:Array<LdtkEntityInstance>;

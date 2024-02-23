@@ -5,7 +5,7 @@ import systems.EntityRegistrySystem;
 import ceramic.LdtkData.LdtkEntityInstance;
 import ceramic.Entity;
 
-class HideTriggerable extends Entity implements Triggerable {
+class HideTriggerable extends Triggerable {
     public static var identifier(default, never) = "Hide";
 
     var targets:Array<LdtkEntityInstance>;

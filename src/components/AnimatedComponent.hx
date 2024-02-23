@@ -1,19 +1,15 @@
 package components;
 
-import ceramic.Quad;
-import ceramic.Tileset;
 import ceramic.SpriteSheetAnimation;
 import ceramic.SpriteSheetFrame;
 import ceramic.LdtkData.LdtkTilesetRectangle;
-import ceramic.Assets;
 import ceramic.Entity;
 import ceramic.Component;
 import ceramic.Sprite;
 import ceramic.SpriteSheet;
 import ceramic.LdtkData.LdtkEntityInstance;
 
-// Reads ldtk entity fields "sprite" and "animations",
-// loads the specified sprite sheet and sets up animation states.
+// Sets up a sprite from animation fields on an ldtk entity.
 class AnimatedComponent extends Entity implements Component {
     @entity var sprite:Sprite;
 
@@ -41,8 +37,6 @@ class AnimatedComponent extends Entity implements Component {
     }
 
     function bindAsComponent() {
-        sprite.x = ldtkEntity.pxX;
-        sprite.y = ldtkEntity.pxY;
         sprite.visible = !fieldHidden;
 
         sprite.quad.roundTranslation = 1;
