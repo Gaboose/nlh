@@ -10,6 +10,7 @@ function newTriggerable(entity:LdtkEntityInstance): Triggerable {
         case HideTriggerable.identifier: return new HideTriggerable(entity);
         case DialogTriggerable.identifier: return new DialogTriggerable(entity);
         case FlickerTriggerable.identifier: return new FlickerTriggerable(entity);
+        case DisableTriggerable.identifier: return new DisableTriggerable(entity);
     }
 
     return null;

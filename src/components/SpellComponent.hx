@@ -1,12 +1,10 @@
 package components;
 
-import systems.EntityRegistrySystem;
 import systems.SpatialPubSubSystem;
 import ceramic.Entity;
 import ceramic.Component;
 import entities.Character;
 import haxe.Timer;
-import ceramic.LdtkData.LdtkEntityInstance;
 
 // Should match the animation name in ldtk.
 var ANIMATION_SPELL = 'spell';

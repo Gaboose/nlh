@@ -1,16 +1,14 @@
 package triggerables;
 
+import systems.MessageSystem;
 import components.AnimatedComponent;
 import ceramic.Sprite;
 import ceramic.NineSlice;
-import ceramic.LdtkData;
 import ceramic.Visual;
-import ceramic.LdtkVisual;
 import systems.EntityRegistrySystem;
 import ceramic.Color;
 import ceramic.Text;
 import ceramic.LdtkData.LdtkEntityInstance;
-import ceramic.Entity;
 
 class DialogTriggerable extends Triggerable {
     public static var identifier(default, never) = "Dialog";
@@ -28,7 +26,8 @@ class DialogTriggerable extends Triggerable {
 
         this.ldtkEntity = entity;
 
-        EntityRegistrySystem.shared.emitSet(entity.iid, this);
+        // EntityRegistrySystem.shared.emitSet(entity.iid, this);
+        MessageSystem.triggers.topic(entity.iid).onBroadcast(this, trigger);
 
         var fields = new Map<String, Any>();
         for (fieldInstance in entity.fieldInstances) {
@@ -113,19 +112,21 @@ class DialogTriggerable extends Triggerable {
                 return;
             }
 
-            var entity = EntityRegistrySystem.shared.get(this.fieldNext.iid);
-            if (entity == null) {
-                return;
-            }
+            MessageSystem.triggers.topic(this.fieldNext.iid).emitBroadcast();
 
-            var trigger: Triggerable;
-            try {
-                trigger = cast(entity, Triggerable);
-            } catch (e:Any) {
-                return;
-            }
+            // var entity = EntityRegistrySystem.shared.get(this.fieldNext.iid);
+            // if (entity == null) {
+            //     return;
+            // }
 
-            trigger.trigger();
+            // var trigger: Triggerable;
+            // try {
+            //     trigger = cast(entity, Triggerable);
+            // } catch (e:Any) {
+            //     return;
+            // }
+
+            // trigger.trigger();
 
             trace("next", this.fieldNext);
         });

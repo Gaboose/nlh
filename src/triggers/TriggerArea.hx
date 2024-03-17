@@ -1,5 +1,6 @@
 package triggers;
 
+import systems.MessageSystem;
 import systems.EntityRegistrySystem;
 import systems.SpatialPubSubSystem;
 import ceramic.LdtkData.LdtkEntityInstance;
@@ -36,19 +37,20 @@ class TriggerArea extends Entity implements Trigger {
     function trigger() {
        
         for (ldtkEntity in onTrigger) {
-            var entity = EntityRegistrySystem.shared.get(ldtkEntity.iid);
-            if (entity == null) {
-                continue;
-            }
+            MessageSystem.triggers.topic(ldtkEntity.iid).emitBroadcast();
+            // var entity = EntityRegistrySystem.shared.get(ldtkEntity.iid);
+            // if (entity == null) {
+            //     continue;
+            // }
 
-            var trigger: Triggerable;
-            try {
-                trigger = cast(entity, Triggerable);
-            } catch (e:Any) {
-                continue;
-            }
+            // var trigger: Triggerable;
+            // try {
+            //     trigger = cast(entity, Triggerable);
+            // } catch (e:Any) {
+            //     continue;
+            // }
 
-            trigger.trigger();
+            // trigger.trigger();
         }
 
         destroy();

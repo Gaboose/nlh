@@ -1,5 +1,6 @@
 package triggerables;
 
+import systems.MessageSystem;
 import ceramic.Sprite;
 import systems.EntityRegistrySystem;
 import ceramic.LdtkData.LdtkEntityInstance;
@@ -15,7 +16,7 @@ class FlickerTriggerable extends Triggerable {
     public function new(entity:LdtkEntityInstance) {
         super();
 
-        EntityRegistrySystem.shared.emitSet(entity.iid, this);
+        MessageSystem.triggers.topic(entity.iid).onBroadcast(this, trigger);
 
         for (fieldInstance in entity.fieldInstances) {
             switch fieldInstance.def.identifier {
@@ -29,19 +30,7 @@ class FlickerTriggerable extends Triggerable {
 
     public function trigger() {
         for (target in targets) {
-            var entity = EntityRegistrySystem.shared.get(target.iid);
-            if (entity == null) {
-                continue;
-            }
-
-            var sprite:Sprite<Dynamic>;
-            try {
-                sprite = cast(entity, Sprite<Dynamic>);
-            } catch(e) {
-                continue;
-            }
-
-            sprite.component("flicker", new FlickerComponent(duration));
+            MessageSystem.flicker.topic(target.iid).emitBroadcast(duration);
         }
     }
 }

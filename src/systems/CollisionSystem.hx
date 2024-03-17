@@ -1,46 +1,102 @@
 package systems;
 
+import ceramic.LdtkData.LdtkLayerInstance;
+import ceramic.Rect;
+import ceramic.Entity;
+
 class CollisionSystem {
-    public static var shared:CollisionSystem = new CollisionSystem(0, 0, 1);
+    public static var shared:CollisionSystem = new CollisionSystem();
 
-    var cWid:Int;
-    var cHei:Int;
-    public var tileGridSize:Int;
+    var layers: Array<CollisionLayer> = [];
 
-    var intGrid:Array<Int>;
+    public function new() {}
 
-    public function new(
-        cWid:Int,
-        cHei:Int,
-        tileGridSize:Int
-    ):Void {
-        this.cWid = cWid;
-        this.cHei = cHei;
-        this.tileGridSize = tileGridSize;
+    // public function new(
+        // cWid:Int,
+        // cHei:Int,
+        // tileGridSize:Int
+    // ):Void {
+        // this.cWid = cWid;
+        // this.cHei = cHei;
+        // this.tileGridSize = tileGridSize;
+    // }
+
+    public function add(layerInstance: LdtkLayerInstance) {
+        layers.push(new CollisionLayer(layerInstance));
     }
 
-    public function setIntGrid(intGrid:Array<Int>):Void {
-        this.intGrid = intGrid;
-    }
-
-    public inline function collidesCell(cx:Int, cy:Int):Bool {
-        if (intGrid == null) {
-            return false;
+    public function collidesRectangle(rect: Rect): Bool {
+        for (layer in layers) {
+            if (layer.collidesRectangle(rect))
+                return true;
         }
-        return intGrid[cx + cy*cWid] != 0;
+
+        return false;
     }
 
-    public inline function collidesPoint(px:Float, py:Float):Bool {
-        return collidesCell(Std.int(px/tileGridSize), Std.int(py/tileGridSize));
+    // public function setIntGrid(intGrid:Array<Int>):Void {
+    //     this.intGrid = intGrid;
+    // }
+}
+
+class CollisionLayer extends Entity {
+    var cWid: Int;
+    var gridSize: Int;
+    var intGrid: Array<Int>;
+    var entityRects: Map<String, {rect: ceramic.Rect, enabled: Bool}> = [];
+
+    public function new(layerInstance: LdtkLayerInstance) {
+        super();
+
+        this.cWid = layerInstance.cWid;
+        this.gridSize = layerInstance.def.gridSize;
+        this.intGrid = layerInstance.intGrid;
+
+        for (entityInstance in layerInstance.entityInstances) {
+            var obj = {rect: new ceramic.Rect(
+                entityInstance.pxX, entityInstance.pxY,
+                entityInstance.width, entityInstance.height,
+            ), enabled: true};
+
+            entityRects.set(entityInstance.iid, obj);
+
+            trace("my entityRects", entityRects);
+
+            MessageSystem.enabled.topic(entityInstance.iid).onValueChange(this, function(current: Bool, previous: Bool) {
+                obj.enabled = current;
+            });
+        }
     }
 
     public function collidesRectangle(rect:ceramic.Rect):Bool {
-        for (cx in Std.int(rect.x/tileGridSize)...Std.int((rect.x+rect.width)/tileGridSize)+1) {
-            for (cy in Std.int(rect.y/tileGridSize)...Std.int((rect.y+rect.height)/tileGridSize)+1) {
-                if (collidesCell(cx, cy)) {
+        return collidesCellRectangle(rect) || collidesEntityRectangle(rect);
+    }
+
+    private inline function cellExists(cx:Int, cy:Int):Bool {
+        var int = intGrid[cx + cy*cWid];
+        return int != 0 && int != null;
+    }
+
+    private function collidesCellRectangle(rect: ceramic.Rect): Bool {
+        if (intGrid == null) {
+            return false;
+        }
+
+        for (cx in Std.int(rect.x/gridSize)...Std.int((rect.x+rect.width)/gridSize)+1) {
+            for (cy in Std.int(rect.y/gridSize)...Std.int((rect.y+rect.height)/gridSize)+1) {
+                if (cellExists(cx, cy)) {
                     return true;
                 }
             }
+        }
+
+        return false;
+    }
+
+    private function collidesEntityRectangle(rect: ceramic.Rect): Bool {
+        for (entityRect in entityRects) {
+            if (entityRect.enabled && Utils.intersects(entityRect.rect, rect))
+                return true;
         }
 
         return false;

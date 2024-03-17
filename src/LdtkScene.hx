@@ -1,7 +1,7 @@
 package;
 
+import systems.MessageSystem.SpriteSubscriber;
 import ceramic.Assets;
-import ceramic.Filter;
 import triggerables.Triggerable.newTriggerable;
 import triggers.Trigger.newTrigger;
 import systems.CollisionSystem;
@@ -17,11 +17,10 @@ import components.LdtkSpriteComponent;
 import components.CollidableComponent;
 import components.AbilitiesComponent;
 import entities.Character;
-import ceramic.Entity;
 import systems.EntityRegistrySystem;
-import camera.PixelArtScaler;
 
 using ceramic.TilemapPlugin;
+using StringTools;
 
 class LdtkScene extends Scene {
 
@@ -98,10 +97,11 @@ class LdtkScene extends Scene {
                 if (entity.def.identifier == "Animated") {
                     trace("animated entity found");
                     var s = new Sprite();
+                    s.component("spriteSubscriber", new SpriteSubscriber(entity.iid));
                     s.component("animated", new AnimatedComponent(entity));
                     s.x = entity.pxX;
                     s.y = entity.pxY;
-                    EntityRegistrySystem.shared.emitSet(entity.iid, s);
+                    // EntityRegistrySystem.shared.emitSet(entity.iid, s);
                     return s;
                 }
 
@@ -114,8 +114,8 @@ class LdtkScene extends Scene {
                     var s = new Sprite();
                     // var filter = s;
                     s.component("ldtkSprite", new LdtkSpriteComponent(assets, ldtkDir, entity));
-                    
-                    EntityRegistrySystem.shared.emitSet(entity.iid, s);
+                    s.component("spriteSubscriber", new SpriteSubscriber(entity.iid));
+                    // EntityRegistrySystem.shared.emitSet(entity.iid, s);
 
                     // filter.content.add(s);
                     // add(filter);
@@ -164,15 +164,25 @@ class LdtkScene extends Scene {
 
             assets.load();
 
-            var collision = level.layerInstance("Collision_1");
+            CollisionSystem.shared = new CollisionSystem();
 
-            CollisionSystem.shared = new CollisionSystem(
-                collision.cWid,
-                collision.cHei,
-                collision.def.gridSize
-            );
+            for (layerInstance in level.layerInstances) {
+                var suffix = Utils.trimPrefix(layerInstance.def.identifier, "Collision");
+                if (suffix == null)
+                    continue;
 
-            CollisionSystem.shared.setIntGrid(collision.intGrid);
+                CollisionSystem.shared.add(layerInstance);
+            }
+
+            // var collision = level.layerInstance("Collision16x16");
+
+            // CollisionSystem.shared = new CollisionSystem(
+            //     collision.cWid,
+            //     collision.cHei,
+            //     collision.def.gridSize
+            // );
+
+            // CollisionSystem.shared.setIntGrid(collision.intGrid);
         });
     }
 }

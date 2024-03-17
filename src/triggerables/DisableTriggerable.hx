@@ -1,15 +1,12 @@
 package triggerables;
 
 import systems.MessageSystem;
-import ceramic.Sprite;
-import systems.EntityRegistrySystem;
 import ceramic.LdtkData.LdtkEntityInstance;
 
-class HideTriggerable extends Triggerable {
-    public static var identifier(default, never) = "Hide";
+class DisableTriggerable extends Triggerable {
+    public static var identifier(default, never) = "Disable";
 
     var targets:Array<LdtkEntityInstance>;
-    var animation:String;
 
     public function new(entity:LdtkEntityInstance) {
         super();
@@ -26,7 +23,7 @@ class HideTriggerable extends Triggerable {
 
     public function trigger() {
         for (target in targets) {
-            MessageSystem.visible.topic(target.iid).value = false;
+            MessageSystem.enabled.topic(target.iid).value = false;
         }
     }
 }

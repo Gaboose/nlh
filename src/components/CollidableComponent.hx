@@ -41,14 +41,15 @@ class CollidableComponent extends Entity implements Component {
             height
         ))) {
             sprite.x = newX;
-        } else if (dx < 0) {
-            sprite.x -= hitbox.x % CollisionSystem.shared.tileGridSize - 1;
-        } else if (dx > 0) {
-            var residual = (hitbox.x+hitbox.width) % CollisionSystem.shared.tileGridSize;
-            if (residual != 0) {
-                sprite.x += CollisionSystem.shared.tileGridSize - residual - 1;
-            }
-        };
+        }
+        // else if (dx < 0) {
+        //     sprite.x -= hitbox.x % CollisionSystem.shared.tileGridSize - 1;
+        // } else if (dx > 0) {
+        //     var residual = (hitbox.x+hitbox.width) % CollisionSystem.shared.tileGridSize;
+        //     if (residual != 0) {
+        //         sprite.x += CollisionSystem.shared.tileGridSize - residual - 1;
+        //     }
+        // };
 
         // Check the y axis
         if (!CollisionSystem.shared.collidesRectangle(new Rect(
@@ -58,13 +59,14 @@ class CollidableComponent extends Entity implements Component {
             height
         ))) {
             sprite.y = newY;
-        } else if (dy < 0) {
-            sprite.y -= hitbox.y % CollisionSystem.shared.tileGridSize - 1;
-        } else if (dy > 0) {
-            var residual = (hitbox.y+hitbox.height) % CollisionSystem.shared.tileGridSize;
-            if (residual != 0) {
-                sprite.y += CollisionSystem.shared.tileGridSize - residual - 1;
-            }
-        };
+        }
+        // else if (dy < 0) {
+        //     sprite.y -= hitbox.y % CollisionSystem.shared.tileGridSize - 1;
+        // } else if (dy > 0) {
+        //     var residual = (hitbox.y+hitbox.height) % CollisionSystem.shared.tileGridSize;
+        //     if (residual != 0) {
+        //         sprite.y += CollisionSystem.shared.tileGridSize - residual - 1;
+        //     }
+        // };
     }
 }
