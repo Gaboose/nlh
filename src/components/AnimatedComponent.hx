@@ -32,7 +32,7 @@ class AnimatedComponent extends Entity implements Component {
         }
 
         this.fieldAnimationTiles = cast fields["AnimationTiles"];
-        this.fieldAnimationRate = cast setOrDefault(fields["AnimationRate"], 5);
+        this.fieldAnimationRate = cast setOrDefault(fields["AnimationRate"], 4);
         this.fieldHidden = cast setOrDefault(fields["Hidden"], false);
     }
 
@@ -56,8 +56,14 @@ class AnimatedComponent extends Entity implements Component {
         }
 
         var sheet = new SpriteSheet();
-        trace(fieldAnimationTiles[0]);
-        sheet.texture = fieldAnimationTiles[0].ceramicTile.texture;
+        trace("fieldAnimationTiles[0]", fieldAnimationTiles[0]);
+        for (tile in fieldAnimationTiles) {
+            if (tile != null) {
+                trace("first tile", tile);
+                sheet.texture = tile.ceramicTile.texture;
+                break;
+            }
+        }
         var atlas = sheet.atlas;
 
         var name = "main";
@@ -66,8 +72,17 @@ class AnimatedComponent extends Entity implements Component {
         var frames = [];
         for (i in (0...this.fieldAnimationTiles.length)) {
             var tile = this.fieldAnimationTiles[i];
-            var width = tile.w;
-            var height = tile.h;
+
+            var tilex = 0;
+            var tiley = 0;
+            var width = 0;
+            var height = 0;
+            if (tile != null) {
+                tilex = tile.x;
+                tiley = tile.y;
+                width = tile.w;
+                height = tile.h;
+            }
 
             var frame = new SpriteSheetFrame(atlas, name + '#' + i, 0);
             frame.duration = frameDuration;
@@ -79,8 +94,8 @@ class AnimatedComponent extends Entity implements Component {
             region.packedWidth = width;
             region.packedHeight = height;
             region.frame(
-                tile.x,
-                tile.y,
+                tilex,
+                tiley,
                 width,
                 height
             );
