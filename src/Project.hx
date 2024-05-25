@@ -11,6 +11,7 @@ import ceramic.InitSettings;
 import ceramic.PixelArt;
 import ceramic.Assets;
 import camera.PixelArtScaler;
+import haxe.io.Path;
 
 class Project extends Entity {
 
@@ -40,19 +41,31 @@ class Project extends Entity {
     }
 
     function ready() {
-        // Set LdtkScene as the current scene.
-        app.scenes.main = new LdtkScene("ldtk-project/ldtk.ldtk", app.assets);
-
         var pixelArtScaler = new PixelArtScaler();
         pixelArtScaler.filter.bindToScreenSize();
-        app.scenes.main.component("pixelArtScaler", pixelArtScaler);
 
         // Set up camera.
         var c = new CameraComponent();
-        app.scenes.main.component("camera", c);
         CameraSystem.shared = new CameraSystem(c);
 
         // Set up TouchSystem
         TouchSystem.shared = new TouchSystem();
+
+        function loadScene() {
+            var levelNumber = (js.Syntax.code("window.location.hash"):String).substr(1);
+            if (levelNumber == "") {
+                levelNumber = "1";
+            }
+
+            // Set LdtkScene as the current scene.
+            app.scenes.main = new LdtkScene(Path.join(["level" + levelNumber, "ldtk.ldtk"]), app.assets);
+            app.scenes.main.component("pixelArtScaler", pixelArtScaler);
+            app.scenes.main.component("camera", c);
+        }
+        loadScene();
+
+        js.Browser.window.addEventListener("hashchange", function(ev) {
+            loadScene();
+        });
     }
 }
