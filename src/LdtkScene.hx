@@ -18,6 +18,7 @@ import components.CollidableComponent;
 import components.AbilitiesComponent;
 import entities.Character;
 import systems.EntityRegistrySystem;
+import camera.PixelArtScaler;
 
 using ceramic.TilemapPlugin;
 using StringTools;
@@ -33,6 +34,11 @@ class LdtkScene extends Scene {
         super();
         this.ldtkPath = ldtkPath;
         ldtkDir = ldtkPath.substr(0, ldtkPath.lastIndexOf("/"));
+
+        var pixelArtScaler = new PixelArtScaler();
+        pixelArtScaler.filter.bindToScreenSize();
+        this.component("pixelArtScaler", pixelArtScaler);
+        this.component("camera", CameraSystem.shared.cameraComponent);
     }
 
     override function preload() {
@@ -59,13 +65,6 @@ class LdtkScene extends Scene {
 
             // Create visuals for applicable entities and index entities and visuals.
             level.createVisualsForEntities(tilemap, null, function (entity:LdtkEntityInstance): Visual {
-                // var arr = entitiesByIdentifier.get(entity.def.identifier);
-                // if (arr == null) {
-                //     entitiesByIdentifier.set(entity.def.identifier, [entity]);
-                // } else {
-                //     arr.push(entity);
-                // }
-
                 if (entity.def.tags.contains("triggerable")) {
                     var triggerable = newTriggerable(entity);
                     if (triggerable == null) {

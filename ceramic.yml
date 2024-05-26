@@ -9,4 +9,3 @@ app:
         - tilemap
         - sprite
         - ldtk
-        - ase
