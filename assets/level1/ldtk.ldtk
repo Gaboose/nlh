@@ -2694,7 +2694,7 @@
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0.25,
-			"pivotY": 0.95,
+			"pivotY": 1,
 			"fieldDefs": [
 				{
 					"identifier": "animations",
@@ -3491,9 +3491,9 @@
 			"lineOpacity": 0,
 			"hollow": false,
 			"color": "#63C74D",
-			"renderMode": "Tile",
+			"renderMode": "Rectangle",
 			"showName": false,
-			"tilesetId": 479,
+			"tilesetId": null,
 			"tileRenderMode": "FullSizeCropped",
 			"tileRect": null,
 			"uiTileRect": null,
@@ -5074,7 +5074,7 @@
 						{
 							"__identifier": "Player",
 							"__grid": [2,9],
-							"__pivot": [0.25,0.95],
+							"__pivot": [0.25,1],
 							"__tags": ["character"],
 							"__tile": { "tilesetUid": 292, "x": 0, "y": 0, "w": 32, "h": 32 },
 							"__smartColor": "#296FFF",

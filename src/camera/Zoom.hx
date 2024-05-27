@@ -38,7 +38,6 @@ class Zoom extends Entity {
     inline function setScale(v: Float) {
         var _lastScale = scale;
         scale = Math.min(Math.max(v, _minScale), _maxScale);
-        trace("scale trace", _lastScale, v, scale);
         emitScaleChange(_lastScale, scale, new Point(screen.pointerX, screen.pointerY));
     }
 }
