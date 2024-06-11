@@ -38,4 +38,8 @@ class Utils {
     public static function intersects(r1: Rect, r2: Rect): Bool {
         return !(r1.x >= r2.x + r2.width || r2.x >= r1.x + r1.width || r1.y >= r2.y + r2.height || r2.y >= r1.y + r1.height);
     }
+
+    public static function pointSub(p1: Point, p2:Point):Point {
+        return new Point(p1.x - p2.x, p1.y - p2.y);
+    }
 }

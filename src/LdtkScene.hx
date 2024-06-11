@@ -5,7 +5,7 @@ import ceramic.Assets;
 import triggerables.Triggerable.newTriggerable;
 import triggers.Trigger.newTrigger;
 import systems.CollisionSystem;
-import systems.CameraSystem;
+import systems.camera.CameraSystem;
 import ceramic.Sprite;
 import components.PlayerControlComponent;
 import components.AnimatedComponent;
@@ -18,7 +18,9 @@ import components.CollidableComponent;
 import components.AbilitiesComponent;
 import entities.Character;
 import systems.EntityRegistrySystem;
-import camera.PixelArtScaler;
+import systems.camera.PixelArtScaler;
+import systems.camera.CameraSceneComponent;
+import systems.camera.CameraAttractorComponent;
 
 using ceramic.TilemapPlugin;
 using StringTools;
@@ -26,6 +28,8 @@ using StringTools;
 class LdtkScene extends Scene {
 
     public var level:ceramic.LdtkData.LdtkLevel;
+
+    public var pxScale(get, set): Float;
 
     var ldtkPath:String;
     var ldtkDir:String;
@@ -38,7 +42,6 @@ class LdtkScene extends Scene {
         var pixelArtScaler = new PixelArtScaler();
         pixelArtScaler.filter.bindToScreenSize();
         this.component("pixelArtScaler", pixelArtScaler);
-        this.component("camera", CameraSystem.shared.cameraComponent);
     }
 
     override function preload() {
@@ -49,6 +52,8 @@ class LdtkScene extends Scene {
     override function create() {
         var ldtkData = assets.ldtk(ldtkPath);
         level = ldtkData.worlds[0].levels[0];
+
+        this.component("cameraScene", new CameraSceneComponent());
 
         level.ensureLoaded(() -> {
             // ensureLoaded() wrapping is only needed when using external levels,
@@ -88,7 +93,7 @@ class LdtkScene extends Scene {
                     p.component("abilities", new AbilitiesComponent(entity));
 
                     // Move camera to the player.
-                    CameraSystem.shared.cameraComponent.setPlayer(p);
+                    p.component("cameraAttractor", new CameraAttractorComponent());
 
                     return p;
                 }
@@ -183,5 +188,16 @@ class LdtkScene extends Scene {
 
             // CollisionSystem.shared.setIntGrid(collision.intGrid);
         });
+    }
+
+    public inline function set_pxScale(scale:Float):Float {
+        var pixelArtScaler: PixelArtScaler = this.component("pixelArtScaler");
+        pixelArtScaler.scale = scale;
+        return scale;
+    }
+
+    public inline function get_pxScale():Float {
+        var pixelArtScaler: PixelArtScaler = this.component("pixelArtScaler");
+        return pixelArtScaler.scale;
     }
 }

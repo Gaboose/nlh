@@ -1,8 +1,7 @@
 package;
 
 import systems.TouchSystem;
-import systems.CameraSystem;
-import components.CameraComponent;
+import systems.camera.CameraSystem;
 import ceramic.Color;
 import ceramic.Entity;
 import ceramic.InitSettings;
@@ -24,9 +23,6 @@ class Project extends Entity {
     }
 
     function ready() {
-        // Set up camera.
-        CameraSystem.shared = new CameraSystem(new CameraComponent());
-
         // Set up TouchSystem
         TouchSystem.shared = new TouchSystem();
 

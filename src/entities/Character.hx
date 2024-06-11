@@ -24,7 +24,7 @@ class Character extends Sprite {
     }
 
     // Called from PlayerControlComponent.
-    function control(dx:Float, dy:Float, action:Bool):Void {
+    inline function control(dx:Float, dy:Float, action:Bool):Void {
         // Don't move when doing an action.
         if (machineState == CharacterState.ACTION) {
             return;

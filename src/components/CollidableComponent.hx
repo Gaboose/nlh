@@ -26,7 +26,7 @@ class CollidableComponent extends Entity implements Component {
         this.y = sprite.y;
     }
 
-    public function control(dx:Float, dy:Float) {
+    inline public function control(dx:Float, dy:Float) {
         var hitbox = new Rect(
             this.x-width/2,
             this.y-height/2,
@@ -46,6 +46,7 @@ class CollidableComponent extends Entity implements Component {
         ))) {
             this.x = newX;
             sprite.x = Math.round(newX);
+            // sprite.x = newX;
         }
         // else if (dx < 0) {
         //     sprite.x -= hitbox.x % CollisionSystem.shared.tileGridSize - 1;
@@ -65,6 +66,7 @@ class CollidableComponent extends Entity implements Component {
         ))) {
             this.y = newY;
             sprite.y = Math.round(newY);
+            // sprite.y = newY;
         }
         // else if (dy < 0) {
         //     sprite.y -= hitbox.y % CollisionSystem.shared.tileGridSize - 1;

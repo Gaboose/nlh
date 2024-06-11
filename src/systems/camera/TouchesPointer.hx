@@ -1,4 +1,4 @@
-package camera;
+package systems.camera;
 
 import ceramic.Entity;
 import ceramic.Touch;
@@ -12,13 +12,13 @@ class TouchesPointer extends Entity {
     public var lastPointerX(default, null):Float = null;
     public var lastPointerY(default, null):Float = null;
 
-    @event function moveGteOne(justChanged: Bool);
-    @event function moveGteTwo(justChanged: Bool);
+    @event function moveGteOne(touchIndexesChanged: Bool);
+    @event function moveGteTwo(touchIndexesChanged: Bool);
 
     // We need this buf to be set to true in handlePointerUp/Down to account
     // for touch change events that happen without any move events in between.
-    var touchPressBuf:Bool = false;
-    var touchPressBufSentFrame:Int = 0;
+    var touchIndexesChangedBuf:Bool = false;
+    var touchIndexesChangedBufSentFrame:Int = 0;
 
     public function new() {
         super();
@@ -37,11 +37,11 @@ class TouchesPointer extends Entity {
         return acc / touches.length;
     }
 
-    function touchPressChanged():Bool {
+    public function jumped():Bool {
         // Clear touchPressBuf, but return true for the whole frame.
-        if (touchPressBuf || app.frame == touchPressBufSentFrame) {
-            touchPressBuf = false;
-            touchPressBufSentFrame = app.frame;
+        if (touchIndexesChangedBuf || app.frame == touchIndexesChangedBufSentFrame) {
+            touchIndexesChangedBuf = false;
+            touchIndexesChangedBufSentFrame = app.frame;
             return true;
         }
 
@@ -49,11 +49,11 @@ class TouchesPointer extends Entity {
     }
 
     function handlePointerDown(info:ceramic.TouchInfo) {
-        touchPressBuf = true;
+        touchIndexesChangedBuf = true;
     }
 
     function handlePointerUp(info:ceramic.TouchInfo) {
-        touchPressBuf = true;
+        touchIndexesChangedBuf = true;
     }
 
     function handlePointerMove(info:ceramic.TouchInfo):Void {
@@ -66,22 +66,26 @@ class TouchesPointer extends Entity {
         // When the touch indexes change, the average touch position jumps.
         // Let the event listeners know, so that they can update derivative
         // vars to compare with the next iteration, but don't react otherwise.
-        var justChanged = touchPressChanged();
+        var jumped = jumped();
 
         if (touches.length == 0) {
             return;
         }
 
-        emitMoveGteOne(justChanged);
+        emitMoveGteOne(jumped);
 
         if (touches.length == 1) {
             return;
         }
 
-        emitMoveGteTwo(justChanged);
+        emitMoveGteTwo(jumped);
     }
 
     function updateTouches() {
+        this.touches = touchesPointer();
+    }
+
+    public function touchesPointer(): Array<Touch> {
         var touches = [];
         for (touch in screen.touches) {
             touches.push(touch);
@@ -92,7 +96,7 @@ class TouchesPointer extends Entity {
             touches.push(t);
         }
         
-        this.touches = touches;
+        return touches;
     }
 
     function updatePointer() {

@@ -1,4 +1,4 @@
-package camera;
+package systems.camera;
 
 import ceramic.Entity;
 import ceramic.Touch;
@@ -27,11 +27,11 @@ class Pinch extends Entity {
         return distance / lastDistance;
     }
 
-    function handleTouchMove(justChanged: Bool) {
+    function handleTouchMove(touchIndexesChanged: Bool) {
         lastDistance = distance;
         distance = _touches.distanceFromMean();
 
-        if (justChanged) {
+        if (touchIndexesChanged) {
             return;
         }
 
